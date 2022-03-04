@@ -1,45 +1,44 @@
 require "Farming/farming_vegetableconf"
 
-SMvegetableconf = {}
+SMvegetableconf = {};
 
--- Beets
--- Need 9 seeds
--- Water lvl over 85
--- Need 4 weeks to grow (112h per phase)
+-- Potatos
+-- Need 4 seeds
+-- Water lvl over 65
+-- Need 3 weeks (84h per phase)
 SMvegetableconf.growBeets = function(planting, nextGrowing, updateNbOfGrow)
 	local nbOfGrow = planting.nbOfGrow;
 	local water = farming_vegetableconf.calcWater(planting.waterNeeded, planting.waterLvl);
-	local waterMax = farming_vegetableconf.calcWater(planting.waterLvl, planting.waterNeededMax);
 	local diseaseLvl = farming_vegetableconf.calcDisease(planting.mildewLvl);
 	if(nbOfGrow == 0) then -- young
-		planting = growNext(planting, farming_vegetableconf.getSpriteName(planting), farming_vegetableconf.getObjectName(planting), nextGrowing, farming_vegetableconf.props[planting.typeOfSeed].timeToGrow + water + waterMax + diseaseLvl);
+		planting = growNext(planting, farming_vegetableconf.getSpriteName(planting), farming_vegetableconf.getObjectName(planting), nextGrowing, farming_vegetableconf.props[planting.typeOfSeed].timeToGrow + water + diseaseLvl);
 		planting.waterNeeded = 70;
 	elseif (nbOfGrow <= 4) then -- young
-		if(water >= 0 and waterMax >= 0 and diseaseLvl >= 0) then
-			planting = growNext(planting, farming_vegetableconf.getSpriteName(planting), farming_vegetableconf.getObjectName(planting), nextGrowing, farming_vegetableconf.props[planting.typeOfSeed].timeToGrow + water + waterMax + diseaseLvl);
+		if(water >= 0 and diseaseLvl >= 0) then
+			planting = growNext(planting, farming_vegetableconf.getSpriteName(planting), farming_vegetableconf.getObjectName(planting), nextGrowing, farming_vegetableconf.props[planting.typeOfSeed].timeToGrow + water + diseaseLvl);
 			planting.waterNeeded = farming_vegetableconf.props[planting.typeOfSeed].waterLvl;
 			planting.waterNeededMax = farming_vegetableconf.props[planting.typeOfSeed].waterLvlMax;
 		else
-			badPlant(water, waterMax, diseaseLvl, planting, nextGrowing, updateNbOfGrow);
+			badPlant(water, nil, diseaseLvl, planting, nextGrowing, updateNbOfGrow);
 		end
 	elseif (nbOfGrow == 5) then -- mature
-		if(water >= 0 and waterMax >= 0 and diseaseLvl >= 0) then
-			planting.nextGrowing = calcNextGrowing(nextGrowing, farming_vegetableconf.props[planting.typeOfSeed].timeToGrow + water + waterMax + diseaseLvl);
+		if(water >= 0 and diseaseLvl >= 0) then
+			planting.nextGrowing = calcNextGrowing(nextGrowing, farming_vegetableconf.props[planting.typeOfSeed].timeToGrow + water + diseaseLvl);
 			planting:setObjectName(farming_vegetableconf.getObjectName(planting))
 			planting:setSpriteName(farming_vegetableconf.getSpriteName(planting))
 			planting.hasVegetable = true;
 		else
-			badPlant(water, waterMax, diseaseLvl, planting, nextGrowing, updateNbOfGrow);
+			badPlant(water, nil, diseaseLvl, planting, nextGrowing, updateNbOfGrow);
 		end
 	elseif (nbOfGrow == 6) then -- mature with seed
-		if(water >= 0 and waterMax >= 0 and diseaseLvl >= 0) then
-			planting.nextGrowing = calcNextGrowing(nextGrowing, 248);
+		if(water >= 0 and diseaseLvl >= 0) then
+			planting.nextGrowing = calcNextGrowing(nextGrowing, 48);
 			planting:setObjectName(farming_vegetableconf.getObjectName(planting))
 			planting:setSpriteName(farming_vegetableconf.getSpriteName(planting))
 			planting.hasVegetable = true;
 			planting.hasSeed = true;
 		else
-			badPlant(water, waterMax, diseaseLvl, planting, nextGrowing, updateNbOfGrow);
+			badPlant(water, nil, diseaseLvl, planting, nextGrowing, updateNbOfGrow);
 		end
 	elseif (planting.state ~= "rotten") then -- rotten
 		planting:rottenThis()
@@ -48,27 +47,24 @@ SMvegetableconf.growBeets = function(planting, nextGrowing, updateNbOfGrow)
 end
 
 
---Icons
+
 farming_vegetableconf.icons["Beets"] = "media/textures/Item_SFBeetroot.png";
 
-
---props
--- Cauliflower
+-- Beets
+farming_vegetableconf.props = {};
 farming_vegetableconf.props["Beets"] = {};
-farming_vegetableconf.props["Beets"].seedsRequired = 9;
+farming_vegetableconf.props["Beets"].seedsRequired = 2;
 farming_vegetableconf.props["Beets"].texture = "vegetation_farming_01_54";
-farming_vegetableconf.props["Beets"].waterLvl = 70;
-farming_vegetableconf.props["Beets"].timeToGrow = ZombRand(50,55);
-farming_vegetableconf.props["Beets"].vegetableName = "filcher.SFBeetSyrupPot";
-farming_vegetableconf.props["Beets"].seedName = "filcher.BeetSeed";
-farming_vegetableconf.props["Beets"].growCode = "SMvegetableconf.growBeets";
-farming_vegetableconf.props["Beets"].seedPerVeg = 3;
-farming_vegetableconf.props["Beets"].minVeg = 4;
-farming_vegetableconf.props["Beets"].maxVeg = 6;
-farming_vegetableconf.props["Beets"].minVegAutorized = 9;
-farming_vegetableconf.props["Beets"].maxVegAutorized = 11;
+farming_vegetableconf.props["Beets"].waterLvl = 65;
+farming_vegetableconf.props["Beets"].timeToGrow = ZombRand(89, 103);
+farming_vegetableconf.props["Beets"].minVeg = 3;
+farming_vegetableconf.props["Beets"].maxVeg = 4;
+farming_vegetableconf.props["Beets"].minVegAutorized = 5;
+farming_vegetableconf.props["Beets"].maxVegAutorized = 9;
+farming_vegetableconf.props["Beets"].vegetableName = "farming.Potato";
+farming_vegetableconf.props["Beets"].seedName = "farming.PotatoSeed";
+farming_vegetableconf.props["Beets"].seedPerVeg = 1;
 
---Sprites
 farming_vegetableconf.sprite["Beets"] = {
 "vegetation_farming_01_48",
 "vegetation_farming_01_49",
@@ -79,3 +75,4 @@ farming_vegetableconf.sprite["Beets"] = {
 "vegetation_farming_01_53",
 "vegetation_farming_01_55"
 }
+
